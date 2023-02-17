@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+
+
+</head>
+
+<body>
+
+<h3>Spring Boot Rest API Crud Completo é</h3>
+
+<!---------Formulário com os respectivos campos----------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<form action="" id="formCadastroUser">
+
+    <div class="mb-3">
+        <label for="id" class="form-label">ID</label>
+        <input type="text" class="form-control" id="id" readonly="readonly">
+    </div>
+
+    <div class="mb-3">
+        <label for="nome" class="form-label">Nome</label>
+        <input type="text" class="form-control" id="nome" placeholder="informe o nome" required="required">
+    </div>
+
+    <div class="mb-3">
+        <label for="idade" class="form-label">Idade</label>
+        <input type="number" class="form-control" id="idade" placeholder="informe a idade" required="required">
+    </div>
+
+</form>
+
+<!--Botões-------------------------------------------------------------------------------------------------------->
+
+<button type="button" class="btn btn-primary" onclick="salvarUsuario()">Salvar</button>
+<button type="button" class="btn btn-secondary" onclick="document.getElementById('formCadastroUser').reset();">Novo</button>
+<!--onclick="document.getElementById('formCadastroUser').reset();" = Esse comando quando clicar, ele irá limpar os últimos dados digitados(Esse é o botão Novo)-->
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalPesquisarUser">Pesquisar</button>
+<!--data-bs-toggle="modal" data-bs-target="#modalPesquisarUser" = Esse comando no botão Pesquisar cria a tela do Modal -->
+
+<!--Modal-------------------------------------------------------------------------------------------------------->
+
+<div class="modal fade" id="modalPesquisarUser" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Pesquisa de usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="nameBusca" class="col-form-label">Informe o nome:</label>
+                        <input type="text" class="form-control" id="nameBusca">
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="pesquisarUser()">Buscar</button>
+                </form>
+
+                <table class="table" id="tabelaresultados">
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Editar</th>
+                        <th scope="col">Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!----------Declaração Jquery e Bootstrap-------------------------------------------------------------------------------------------------------------------------------------------------->
+
+<!--Jquery -->
+<script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<!-------------------------------------------------------------------------------------------------------------------------------------------------------------->
+
+
+<!-- Implementado o código em javascript-->
+</body>
+<script type="text/javascript">
+
+
+
+    function deleteUser(id) {
+
+        $.ajax({
+            method: "DELETE",
+            url: "delete",
+            data: "iduser=" + id, <!-- Nessa parte está sendo retornado uma lista de dados-->
+            success: function (response) {
+
+                alert(response);
+
+            }
+        }).fail(function (xhr, status, errorThrown) {
+            alert("Erro ao deletar usuário por Id " + xhr.responseText);
+        });
+
+    }
+
+
+    function pesquisarUser(){
+
+        var nome = $('#nameBusca').val();
+
+        if (nome != null && nome.trim() != ''){
+
+            $.ajax({
+                method: "GET",
+                url: "buscarPorNome",
+                data: "name=" + nome, <!-- Nessa parte está sendo retornado uma lista de dados-->
+
+                success: function (response){
+
+                    $('#tabelaresultados > tbody > tr').remove();
+
+                    for (var i = 0; i < response.length; i++){ <!-- Criando um for para percorrer a lista -->
+                        $('#tabelaresultados > tbody').append('<tr>' +
+                            '<td>'+response[i].id+'</td>' + <!-- Adicionando o Id no modal da tabela de pesquisa -->
+                            '<td>'+response[i].nome+'</td>' + <!-- Adicionando o nome no modal da tabela de pesquisa -->
+
+                            '<td><button type="button" onclick="colocarEmEdicao('+response[i].id+')" class="btn btn-primary" >Ver</button></td>' + <!-- Adicionando o botão para ver-->
+                            <!-- onclick="colocaremEdicao('+response[i].id+')"  = Esse comando coloca como edição -->
+
+                            '<td><button type="button" class="btn btn-danger" onclick="deleteUser('+response[i].id+')">Delete</button></td>' + <!--Adicionando o botão deletar-->
+                            <!-- onclick="deleteUser('+response[i]+')"  = Esse comando irá deletar aquele respectivo id selecionado -->
+
+                            '</tr>');<!--reenchendo a tabela de pesquisa com o Id e os nomes respectivos-->
+                    }
+                }
+            }).fail(function (xhr, status, errorThrown){
+                alert("Erro ao buscar " + xhr.responseText);
+            });
+        }
+    }
+
+
+    <!--Criando função para fazer um busca pelo Id-->
+    function colocarEmEdicao(id){
+
+        $.ajax({
+            method: "GET",
+            url: "buscaruserid",
+            data: "iduser=" + id, <!-- Nessa parte está sendo retornado uma lista de dados-->
+
+            success: function (response){
+
+                <!--Como nesse caso não é uma lista, posso passar o Json para cada respectivo campo.-->
+                $("#id").val(response.id);
+                $("#nome").val(response.nome);
+                $("#idade").val(response.idade);
+
+                $('#modalPesquisarUser').modal('hide'); <!--Comando para quando clicar em ver, ele feche o modal automaticamente-->
+
+            }
+        }).fail(function (xhr, status, errorThrown){
+            alert("Erro ao buscar usuário por Id " + xhr.responseText);
+        });
+    }
+
+
+
+    <!--Criação da função salvar no banco de dados após clique no botão salvar -->
+    function salvarUsuario() {
+
+        var id = $("#id").val();
+        var nome = $("#nome").val();
+        var idade = $("#idade").val();
+
+        <!-- Exemplo do código Ajax para gravar no END-POINT "salvar" da API -->
+        $.ajax({
+            method: "POST",
+            url: "salvar",
+            data: JSON.stringify({<!--Passando os parâmetros, as variáveis da classe do banco de dados -->
+                id: id,
+                nome: nome,
+                idade: idade
+            }),
+            contentType: "application/json; charset=utf-8",
+            success: function (response) {
+
+                $("#id").val(response.id); <!--Mostando na tela no campo id, o id que será inserido no banco de dados(Impriminado no campo Id)-->
+                alert("Salvou com sucesso!");
+            }
+        }).fail(function (xhr, status, errorThrown) {
+            alert("Erro ao salvar " + xhr.responseText);
+        });
+
+
+
+
+
+    }
+</script>
+
+</html>
