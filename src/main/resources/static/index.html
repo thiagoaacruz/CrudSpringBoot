@@ -39,10 +39,14 @@
 <!--Botões-------------------------------------------------------------------------------------------------------->
 
 <button type="button" class="btn btn-primary" onclick="salvarUsuario()">Salvar</button>
+
 <button type="button" class="btn btn-secondary" onclick="document.getElementById('formCadastroUser').reset();">Novo</button>
 <!--onclick="document.getElementById('formCadastroUser').reset();" = Esse comando quando clicar, ele irá limpar os últimos dados digitados(Esse é o botão Novo)-->
+
 <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalPesquisarUser">Pesquisar</button>
 <!--data-bs-toggle="modal" data-bs-target="#modalPesquisarUser" = Esse comando no botão Pesquisar cria a tela do Modal -->
+
+<button type="button" class="btn btn-warning" onclick="botaoDeletarDaTela();">Deletar</button>
 
 <!--Modal-------------------------------------------------------------------------------------------------------->
 
@@ -99,14 +103,28 @@
 <script type="text/javascript">
 
 
+    function botaoDeletarDaTela(){
+
+        var id = $('#id').val(); <!--Pegando o dado id, com esse comando pego o valor desse campo -->
+
+        deleteUser(id); <!-- Nessa parte estou fazendo reuso de código para deletar o id-->
+
+        document.getElementById('formCadastroUser').reset(); <!--Esse comando limpa da tela os dados que foram trazidos -->
+    }
+
+
 
     function deleteUser(id) {
+
+        if (confirm('Deseja realmente deleta?')){<!--Criando uma condição se realmente desejo excluir -->
 
         $.ajax({
             method: "DELETE",
             url: "delete",
             data: "iduser=" + id, <!-- Nessa parte está sendo retornado uma lista de dados-->
             success: function (response) {
+
+                $('#' + id).remove();
 
                 alert(response);
 
@@ -115,6 +133,7 @@
             alert("Erro ao deletar usuário por Id " + xhr.responseText);
         });
 
+        }
     }
 
 
@@ -134,7 +153,7 @@
                     $('#tabelaresultados > tbody > tr').remove();
 
                     for (var i = 0; i < response.length; i++){ <!-- Criando um for para percorrer a lista -->
-                        $('#tabelaresultados > tbody').append('<tr>' +
+                        $('#tabelaresultados > tbody').append('<tr id="'+response[i].id+'">' + <!-- <tr id="'+response[i].id+'">  = Com esse comando estou refereciando a linha a ser apagada-->
                             '<td>'+response[i].id+'</td>' + <!-- Adicionando o Id no modal da tabela de pesquisa -->
                             '<td>'+response[i].nome+'</td>' + <!-- Adicionando o nome no modal da tabela de pesquisa -->
 
