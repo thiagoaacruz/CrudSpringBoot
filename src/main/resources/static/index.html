@@ -8,6 +8,15 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
 
+<style type="text/css">
+/* Criando um estilo para HTML */
+    html{
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 5%;
+    }
+
+</style>
 
 </head>
 
@@ -66,6 +75,7 @@
                     <button type="button" class="btn btn-success" onclick="pesquisarUser()">Buscar</button>
                 </form>
 
+            <div style="height: 300px; overflow: scroll;"  ><!--Criando uma barra de rolagem na pesquisa de usuário, para não quebrar a página -->
                 <table class="table" id="tabelaresultados">
                     <thead>
                     <tr>
@@ -78,6 +88,9 @@
                     <tbody>
                     </tbody>
                 </table>
+            </div>
+
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -107,16 +120,18 @@
 
         var id = $('#id').val(); <!--Pegando o dado id, com esse comando pego o valor desse campo -->
 
-        deleteUser(id); <!-- Nessa parte estou fazendo reuso de código para deletar o id-->
+        if (id != null && id.trim() != ''){<!--Criando uma condição para deletar, apenas de for diferente de nulo/vazio  -->
+            deleteUser(id); <!-- Nessa parte estou fazendo reuso de código para deletar o id-->
+            document.getElementById('formCadastroUser').reset(); <!--Esse comando limpa da tela os dados que foram trazidos -->
 
-        document.getElementById('formCadastroUser').reset(); <!--Esse comando limpa da tela os dados que foram trazidos -->
+        }
     }
 
 
 
     function deleteUser(id) {
 
-        if (confirm('Deseja realmente deleta?')){<!--Criando uma condição se realmente desejo excluir -->
+        if (confirm('Deseja realmente deletar?')){<!--Criando uma condição se realmente desejo excluir -->
 
         $.ajax({
             method: "DELETE",
@@ -204,6 +219,20 @@
         var id = $("#id").val();
         var nome = $("#nome").val();
         var idade = $("#idade").val();
+
+        if(nome == null || nome != null && nome.trim() == ''){<!--Criando uma condição para salva apenas se tiver o nome -->
+            $("#nome").focus(); <!--Esse comando redireciona para o campo que tem que ser informado-->
+            alert('Informe o nome');
+            return;
+        }
+
+        if(idade == null || idade != null && idade.trim() == ''){<!--Criando uma condição para salva apenas se tiver a idade -->
+            $("#idade").focus(); <!--Esse comando redireciona para o campo que tem que ser informado-->
+            alert('Informe a idade');
+            return;
+        }
+
+
 
         <!-- Exemplo do código Ajax para gravar no END-POINT "salvar" da API -->
         $.ajax({
